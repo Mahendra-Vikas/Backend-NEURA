@@ -8,4 +8,4 @@ duckduckgo-search
 langchain_community
 requests
 python-dotenv
-mcp
+modelcontextprotocol
