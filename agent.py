@@ -7,8 +7,8 @@ from livekit.plugins import noise_cancellation, google
 from prompts import AGENT_INSTRUCTION, SESSION_INSTRUCTION
 from tools import get_weather, search_web
 from mem0 import AsyncMemoryClient
-from mcp_client import MCPServerSse
-from mcp_client.agent_tools import MCPToolsIntegration
+#from mcp_client import MCPServerSse
+#from mcp_client.agent_tools import MCPToolsIntegration
 import os
 import json
 import logging
@@ -47,10 +47,19 @@ async def entrypoint(ctx: agents.JobContext):
         messages_formatted = []
 
         logging.info(f"Chat context messages: {chat_ctx.items}")
+
         for item in chat_ctx.items:
-            content_str = ''.join(item.content) if isinstance(item.content, list) else str(item.content)
+            if not hasattr(item, "role"):
+                continue
+            if not hasattr(item, "content"):
+                continue
+
+            content = item.content
+            content_str = ''.join(content) if isinstance(content, list) else str(content)
+
             if memory_str and memory_str in content_str:
                 continue
+
             if item.role in ['user', 'assistant']:
                 messages_formatted.append({
                     "role": item.role,
@@ -83,15 +92,16 @@ async def entrypoint(ctx: agents.JobContext):
             role="assistant",
             content=f"The user's name is {user_name}, and this is relevant context about him: {memory_str}.",
         )
-    mcp_server=MCPServerSse(
-        params={"url": os.environ.get ("N8N_MCP_SERVER_URL")}, 
-        cache_tools_list=True,
-        name="SSE MCP Server"
-    )
-    agent=await MCPToolsIntegration.create_agent_with_tools(
-        agent_class=Assistant, agent_kwargs={"chat_ctx":initial_ctx},
-        mcp_servers=[mcp_server]
-    )
+    #  mcp_server=MCPServerSse(
+    #     params={"url": os.environ.get ("N8N_MCP_SERVER_URL")}, 
+    #    cache_tools_list=True,
+    #     name="SSE MCP Server"
+    #)
+    #agent=await MCPToolsIntegration.create_agent_with_tools(
+    #   agent_class=Assistant, agent_kwargs={"chat_ctx":initial_ctx},
+    #  mcp_servers=[mcp_server]
+    #)
+    agent = Assistant(chat_ctx=initial_ctx)
 
     await ctx.connect()
 
