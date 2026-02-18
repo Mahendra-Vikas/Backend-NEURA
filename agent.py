@@ -7,8 +7,8 @@ from livekit.plugins import noise_cancellation, google
 from prompts import AGENT_INSTRUCTION, SESSION_INSTRUCTION
 from tools import get_weather, search_web
 from mem0 import AsyncMemoryClient
-from mcp_client import MCPServerSse
-from mcp_client.agent_tools import MCPToolsIntegration
+#from mcp_client import MCPServerSse
+#from mcp_client.agent_tools import MCPToolsIntegration
 import os
 import json
 import logging
